@@ -15,10 +15,20 @@ contract CalculatorTest is Test {
         calculator = new Calculator(); // Display contract before the test
 
     }
+    // Basic test for every function BAXISBIABSIABUSBIABSAISDUAIISDAIBDUIADSBUAI
+    function testModule() public {
+        uint256 result = calculator.module(10, 3);
+        assert(result, 1, "Module operation is incorrect");
+    }
 
     function testAddition() public {
         uint256 result = calculator.addition(5, 3);
         assertEq(result, 8, "Plus operation is incorrect");
+    }
+
+    function testFuzzAddition(uint256 a, uint256 b) public {
+        uint256 result = calculator.addition(a,b);
+        assertTrue(true); // If it reaches here, the test passes
     }
 
     function testSubstraction() public {
@@ -26,9 +36,35 @@ contract CalculatorTest is Test {
         assertEq(result, 7, "Minus operation is incorrect");
     }
 
+    function testSubstractionZeroResult() public {
+        uint256 result = calculator.substraction(10,10);
+        assertEq(result,0,"Substraction should result in zero");
+    }
+
+
     function testMultiplier() public {
         uint256 result = calculator.multiplier(5,3);
         assertEq(result,15,"Multiplier operation is incorrect"); 
+    }
+
+    function testMultiplicationByZero() public {
+        uint256 result = calculator.multiplier(10,0);
+        assertEq(result, 0, "Multiplication by zero should be zero")
+    }
+
+    function testDivision() public {
+        uint256 result = calculator.division(10,2);
+        assertEq(result,5,"Division operation is incorrect");
+    }
+
+     function testDivisionByZero() public {
+        vm.expectRevert("Division by zero");
+        calculator.division(10, 0);
+    }
+
+    function testExponentiation() public {
+        uint256 result = calculator.exponentiation(2,3);
+        assertEq(result,8,"Exponentiation operation is incorrect");
     }
 
     function testOnlyOwnerCanGetOperationDetails() public {
@@ -46,5 +82,34 @@ contract CalculatorTest is Test {
         assertEq(result,8,"Incorrect");
         assertEq(keccak256(bytes(operationType)),keccak256(bytes("Addition")),"Incorrect");
     }
+
+    function testAdditionOverflow() public {
+        uint256 maxUint = type(uint256).max;
+        vm.expectRevert(); // We gonne wait for revert of transaction
+        calculator.addition(maxUint, 1);
+    }
+
+     function testSubstractionOverflow() public {
+        vm.expectRevert(); 
+        calculator.substraction(0, 1);
+    }
+
+     function testMultiplicationOverflow() public {
+        uint256 maxUint = type(uint256).max;
+        vm.expectRevert(); 
+        calculator.multiplier(maxUint, 2);
+    }
+
+     function testExponentiationOverflow() public {
+        vm.expectRevert(); 
+        calculator.exponentiation(2, 256); //Big exponentiation can cause overflow
+    }
+
+    function testGetOperationDetailsOutofBounds() public {
+        vm.expectRevert("Index out of bounds");
+        calculator.getOperationDetails(0); //Try to get details when the history is empty
+    }
+
+
     
 }

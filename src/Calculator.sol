@@ -85,7 +85,7 @@ contract Calculator{
         return result_;
     }
 
-    //
+    // Exponentiation of the first number by the second and stores the result in history
     function exponentiation(uint256 base_, uint256 exponent_) public returns (uint256 result_) {
         result_ = Math.pow(base_, exponent_);
         history.push(Operation("Exponentiation", base_, exponent_, result_, block.timestamp));

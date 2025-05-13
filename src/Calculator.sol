@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: LGPL-3.0-only
 
 // Solidity version
-pragma solidity 0.8.24;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/math/Math.sol";
+//import "@openzeppelin/contracts/utils/math/Math.sol";
 
 //Contract 
 contract Calculator{
-
+    
+    //using Math for uint256;
     //Variables
    // uint256 public result = 10;  // [ 0- 2^256 - 1 ]
     address public owner;
@@ -54,6 +55,7 @@ contract Calculator{
    // Adds two numbers and stores the result in history 
     function addition(uint256 num1_, uint num2_) public  returns (uint256 result_) {
         result_ = num1_+ num2_;
+        require(num1_ + num2_ >= num1_, "Addition overflow");
         history.push(Operation("Addition",num1_,num2_,result_, block.timestamp));
         emit Addition(num1_,num2_,result_);
         return result_;
@@ -79,15 +81,26 @@ contract Calculator{
 
      //Divides the first number by the second and stores the result in history
     function division(uint256 num1_,uint256 num2_) public returns (uint256 result_){
+        if (num1_ != 0 && num2_ != 0) { 
         result_ = num1_ / num2_;
         history.push(Operation("Division",num1_,num2_,result_,block.timestamp));
         emit Division(num1_,num2_,result_);
         return result_;
+        }
+    }
+
+     // Helper function to calculate power
+    function power(uint256 base_, uint256 exponent_) internal pure returns (uint256) {
+        uint256 result = 1;
+        for (uint256 i = 0; i < exponent_; i++) {
+            result *= base_;
+        }
+        return result;
     }
 
     // Exponentiation of the first number by the second and stores the result in history
     function exponentiation(uint256 base_, uint256 exponent_) public returns (uint256 result_) {
-        result_ = Math.pow(base_, exponent_);
+        result_ = power(base_, exponent_);
         history.push(Operation("Exponentiation", base_, exponent_, result_, block.timestamp));
         emit Exponentiation(base_, exponent_, result_);
         return result_;
@@ -110,12 +123,6 @@ contract Calculator{
         return (op.operationType, op.num1, op.num2, op.result, op.timestamp);
 
     }
-    
-
-    
-
-
-
 
 
 }
